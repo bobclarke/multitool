@@ -1,0 +1,25 @@
+---
+resources:
+  - name: multitool-master
+    type: git
+    icon: github-circle
+    source:
+      uri: https://github.com/bobclarke/multitool
+
+jobs:
+  - name: job
+    public: true
+    plan:
+      - get: multitool-master
+        trigger: true
+      - task: list-files
+        config:
+          inputs:
+            - name: multitool-master
+          platform: linux
+          image_resource:
+            type: registry-image
+            source: { repository: busybox }
+          run:
+            path: ls
+            args: ["-la", "./multitool-master"]
