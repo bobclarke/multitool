@@ -20,11 +20,11 @@ func getRouter() *mux.Router {
 	// Set up handler for GET on /hello
 	r.HandleFunc("/hello", handler).Methods("GET")
 
-	// Set up handler for static content
-	//staticFileDirectory := http.Dir("." + assetsDir)
-	//staticFileHandler := http.StripPrefix(assetsDir, http.FileServer(staticFileDirectory))
-	//r.PathPrefix(assetsDir).Handler(staticFileHandler).Methods("GET")
+	// Set up GET and POST handlers for /bird
+	r.HandleFunc("/bird", getBird).Methods("GET")
+	r.HandleFunc("/bird", addBird).Methods("POST")
 
+	// Static content handler (i.e for stuff in /assets/)
 	staticContent := http.Dir("." + assetsDir)
 	staticFileHandler := http.StripPrefix(assetsDir, http.FileServer(staticContent))
 	r.PathPrefix(assetsDir).Handler(staticFileHandler).Methods("GET")

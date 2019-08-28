@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func Test405(t *testing.T) {
+func TestPost(t *testing.T) {
 	// Get a Router instance
 	r := getRouter()
 
