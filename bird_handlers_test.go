@@ -84,6 +84,22 @@ func TestAddBird(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Received status code %d, expected %d", resp.StatusCode, http.StatusOK)
 	}
+
+	a, _ := http.Get(mockServer.URL + "/bird")
+	actualResp, _ := ioutil.ReadAll(a.Body)
+	expectedResp := `[{"Species":"Sparrow","Description":"A small harmless bird"},{"Species":"Eagle","Description":"A large bird pf prey"}]`
+
+	//fmt.Printf("actualResp is: %s\n", string(actualResp))
+	//fmt.Printf("expectedResp is: %s\n", expectedResp)
+
+	if string(actualResp) != expectedResp {
+		t.Errorf("Expected response of: %s, got %s", expectedResp, actualResp)
+	}
+
+	//fmt.Printf("birds is: %v\n", birds)
+
+	//v :=`"foo", "bar"`
+
 }
 
 func newAddBirdForm() *url.Values {

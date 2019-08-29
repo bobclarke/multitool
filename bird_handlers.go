@@ -57,8 +57,8 @@ func addBird(w http.ResponseWriter, r *http.Request) {
 	birds = append(birds, bird)
 
 	// Some logging for debug
-	fmt.Printf("bird is: %v\n", bird)
-	fmt.Printf("birds is: %v\n", birds)
+	//fmt.Printf("bird is: %v\n", bird)
+	//fmt.Printf("birds is: %v\n", birds)
 
 	// Redirect to index.html
 	http.Redirect(w, r, "/assets/", http.StatusFound)
