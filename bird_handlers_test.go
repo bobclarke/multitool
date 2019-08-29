@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -12,19 +12,27 @@ import (
 
 func TestGetBird(t *testing.T) {
 
-	// Set up some test data
-	testBird := Bird{}
-	testBird.Species = "Sparrow"
-	testBird.Description = "A small harmless bird"
+	// Set up some test data - two ways of doing this
+	/*
+		testBird := Bird{}
+		testBird.Species = "Sparrow"
+		testBird.Description = "A small harmless bird"
+		birds = append(birds, testBird)
+	*/
+
+	testBird := Bird{
+		Species:     "Sparrow",
+		Description: "A small harmless bird",
+	}
 	birds = append(birds, testBird)
 
 	// Get a router instance
 	r := getRouter()
 
-	// Get a Mock Server
+	// Set up a mock http server and pass it our router
 	mockServer := httptest.NewServer(r)
 
-	// Get the /birds URL from mockServer
+	// Call /birds URL from mockServer
 	resp, err := http.Get(mockServer.URL + "/bird")
 	if err != nil {
 		t.Fatalf("Error is: %s", err)
@@ -42,10 +50,16 @@ func TestGetBird(t *testing.T) {
 		t.Errorf("Problem with Content-Type header, expected %s, got %s", expected, actual)
 	}
 
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
+	// Check the response body make make sure it contains our test data
+	expectedRespBody, _ := json.Marshal(testBird) // Convert from type Bird to JSON
+	actualRespBody, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	x := actualRespBody[:len(actualRespBody)-1]
+	trimmedRespBody := x[1:]
 
-	fmt.Println(string(b))
+	if string(expectedRespBody) != string(trimmedRespBody) {
+		t.Errorf("Expected response of: %s, got %s", expectedRespBody, trimmedRespBody)
+	}
 }
 
 func TestAddBird(t *testing.T) {
@@ -57,10 +71,11 @@ func TestAddBird(t *testing.T) {
 	mockServer := httptest.NewServer(r)
 
 	// Create some test data to post
-	requestBody := ("This is some test data")
+	form := newAddBirdForm()
+	requestBody := form.Encode()
 
 	// Carry out a POST
-	resp, err := http.Post(mockServer.URL+"/bird", "application/text", bytes.NewBufferString(requestBody))
+	resp, err := http.Post(mockServer.URL+"/bird", "application/x-www-form-urlencoded", bytes.NewBufferString(requestBody))
 
 	if err != nil {
 		t.Fatal(err)
@@ -69,14 +84,11 @@ func TestAddBird(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Received status code %d, expected %d", resp.StatusCode, http.StatusOK)
 	}
-
 }
 
 func newAddBirdForm() *url.Values {
 	form := url.Values{}
-	form.Set("species", "eagle")
+	form.Set("species", "Eagle")
 	form.Set("description", "A large bird pf prey")
-
 	return &form
-
 }

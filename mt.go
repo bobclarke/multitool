@@ -18,7 +18,7 @@ func getRouter() *mux.Router {
 	r := mux.NewRouter()
 
 	// Set up handler for GET on /hello
-	r.HandleFunc("/hello", handler).Methods("GET")
+	r.HandleFunc("/hello", helloHandler).Methods("GET")
 
 	// Set up GET and POST handlers for /bird
 	r.HandleFunc("/bird", getBird).Methods("GET")
@@ -32,7 +32,7 @@ func getRouter() *mux.Router {
 	return r
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func helloHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello World!")
 }
 

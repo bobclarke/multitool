@@ -28,9 +28,9 @@ func TestHandler(t *testing.T) {
 	// the http request that we make)
 	recorder := httptest.NewRecorder()
 
-	// Create an HTTP handler from our handler function. "handler" is the handler
+	// Create an HTTP handler from our handler function. "helloHandler" is the handler
 	// function defined in our mt.go file that we want to test
-	hf := http.HandlerFunc(handler)
+	hf := http.HandlerFunc(helloHandler)
 
 	// Serve the HTTP request to our recorder. This is the line that actually
 	// executes our the handler that we want to test

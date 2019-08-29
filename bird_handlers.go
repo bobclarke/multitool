@@ -18,10 +18,14 @@ type Bird struct {
 	Description string
 }
 
+// Until we put a proper database in place, the birds variable
+// is where our list of Birds is held
+
 var birds []Bird
 
 func getBird(w http.ResponseWriter, r *http.Request) {
 
+	// Convert brids into JSON (represented as []byte)
 	birdListBytes, err := json.Marshal(birds)
 
 	if err != nil {
@@ -51,6 +55,10 @@ func addBird(w http.ResponseWriter, r *http.Request) {
 
 	// Append our Bird to the Birds array
 	birds = append(birds, bird)
+
+	// Some logging for debug
+	fmt.Printf("bird is: %v\n", bird)
+	fmt.Printf("birds is: %v\n", birds)
 
 	// Redirect to index.html
 	http.Redirect(w, r, "/assets/", http.StatusFound)
