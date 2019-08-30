@@ -1,11 +1,6 @@
 ---
 resources:
-  - name: my-timer
-    type: time
-    source:
-      interval: 5m
-
-  - name: multitool
+  - name: multitool-git-repo
     type: git
     icon: github-circle
     webhook_token: testhook
@@ -37,7 +32,7 @@ resources:
 task-config: &task-config
   platform: linux
   inputs:
-    - name: multitool
+    - name: multitool-git-repo
       path: /go/src/github.com/bobclarke/multitool
   run:
     path: /bin/sh
@@ -49,38 +44,46 @@ task-config: &task-config
         cd $SRCPATH
         go get -t -v ./...
         go test -v
+  
 
 jobs:
-  - name: golang-1.11
-    public: true
-    plan: 
-      - get: multitool
-        trigger: true
-      - get: golang-1.11.x-image
-        trigger: true
-      - task: run-tests
-        image: golang-1.11.x-image
-        config:
-          << : *task-config
-  - name: golang-1.10
-    public: true
-    plan:
-      - get: multitool
-        trigger: true
-      - get: golang-1.10.x-image
-        trigger: true
-      - task: run-tests
-        image: golang-1.10.x-image
-        config:
-          << : *task-config
   - name: golang-1.9
     public: true
     plan:
-      - get: multitool
+      - get: multitool-git-repo
         trigger: true
       - get: golang-1.9.x-image
         trigger: true
       - task: run-tests
         image: golang-1.9.x-image
         config:
+          << : *task-config
+
+  - name: golang-1.10
+    public: true
+    plan: 
+      - get: multitool-git-repo
+        trigger: true
+        passed: [golang-1.9]
+      - get: golang-1.10.x-image
+        trigger: true
+      - task: run-tests
+        image: golang-1.10.x-image
+        config:
+          inputs: some-files
+          << : *task-config
+
+  - name: golang-1.11
+    public: true
+    plan: 
+      - get: multitool-git-repo
+        trigger: true
+        passed: [golang-1.9]
+      - get: golang-1.11.x-image
+        trigger: true
+      - task: run-tests
+        image: golang-1.11.x-image
+        config:
+          outputs:
+          - name: some-files
           << : *task-config

@@ -16,6 +16,7 @@ func main() {
 
 func getRouter() *mux.Router {
 	r := mux.NewRouter()
+	// Hello
 
 	// Set up handler for GET on /hello
 	r.HandleFunc("/hello", helloHandler).Methods("GET")
