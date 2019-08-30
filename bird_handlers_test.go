@@ -95,11 +95,6 @@ func TestAddBird(t *testing.T) {
 	if string(actualResp) != expectedResp {
 		t.Errorf("Expected response of: %s, got %s", expectedResp, actualResp)
 	}
-
-	//fmt.Printf("birds is: %v\n", birds)
-
-	//v :=`"foo", "bar"`
-
 }
 
 func newAddBirdForm() *url.Values {

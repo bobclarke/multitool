@@ -1,25 +1,86 @@
 ---
 resources:
-  - name: multitool-master
+  - name: my-timer
+    type: time
+    source:
+      interval: 5m
+
+  - name: multitool
     type: git
     icon: github-circle
+    webhook_token: testhook
     source:
-      uri: https://github.com/bobclarke/multitool
+      uri: https://github.com/bobclarke/multitool.git
+      branch: master
+
+  - name: golang-1.11.x-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: golang
+      tag: 1.11-stretch
+
+  - name: golang-1.10.x-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: golang
+      tag: 1.10-stretch
+
+  - name: golang-1.9.x-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: golang
+      tag: 1.9-stretch
+
+task-config: &task-config
+  platform: linux
+  inputs:
+    - name: multitool
+      path: /go/src/github.com/bobclarke/multitool
+  run:
+    path: /bin/sh
+    args:
+      - -c
+      - |
+        SRCPATH=$PWD/go/src/github.com/bobclarke/multitool
+        GOPATH=$PWD/go
+        cd $SRCPATH
+        go get -t -v ./...
+        go test -v
 
 jobs:
-  - name: job
+  - name: golang-1.11
+    public: true
+    plan: 
+      - get: multitool
+        trigger: true
+      - get: golang-1.11.x-image
+        trigger: true
+      - task: run-tests
+        image: golang-1.11.x-image
+        config:
+          << : *task-config
+  - name: golang-1.10
     public: true
     plan:
-      - get: multitool-master
+      - get: multitool
         trigger: true
-      - task: list-files
+      - get: golang-1.10.x-image
+        trigger: true
+      - task: run-tests
+        image: golang-1.10.x-image
         config:
-          inputs:
-            - name: multitool-master
-          platform: linux
-          image_resource:
-            type: registry-image
-            source: { repository: busybox }
-          run:
-            path: ls
-            args: ["-la", "./multitool-master"]
+          << : *task-config
+  - name: golang-1.9
+    public: true
+    plan:
+      - get: multitool
+        trigger: true
+      - get: golang-1.9.x-image
+        trigger: true
+      - task: run-tests
+        image: golang-1.9.x-image
+        config:
+          << : *task-config

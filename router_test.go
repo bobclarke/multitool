@@ -48,5 +48,4 @@ func TestRouter(t *testing.T) {
 	if respString != expected {
 		t.Errorf("Response should be %s, got %s", expected, respString)
 	}
-
 }
